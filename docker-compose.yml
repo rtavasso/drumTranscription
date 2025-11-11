@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  demucs:
+    build: .
+    image: demucs-dev:cpu
+    working_dir: /workspace
+    volumes:
+      - ./data:/workspace/data
+      - ./stems:/workspace/stems
+    command: ["python", "demucs/dev_demix.py", "data/example.wav", "--out", "stems"]
+    # For GPU, use the service below or run with: docker run --gpus all ...
+
+  demucs-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.cuda
+    image: demucs-dev:cuda
+    gpus: all
+    working_dir: /workspace
+    volumes:
+      - ./data:/workspace/data
+      - ./stems:/workspace/stems
+    command: ["python", "demucs/dev_demix.py", "data/example.wav", "--out", "stems"]
+    # Run with GPU:
+    #   docker compose run --rm --gpus all demucs-gpu python demucs/dev_demix.py data/example.wav --out stems
